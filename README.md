@@ -1,12 +1,11 @@
-#ShopShield 🛡️
+ShopShield 🛡️
 
 ShopShield is a web-based management system for multi-location mobile repair shops. It replaces paper logs, WhatsApp messages, and manual spreadsheets with a single app that tracks repairs, sales, inventory, and employee activity in real-time.
 
 Designed for small business owners, ShopShield prevents theft, ensures accountability, and provides actionable insights across all locations.
 
-##🚀 Features
-
-###🔧 Jobs & Repair Management
+🚀 Features
+🔧 Jobs & Repair Management
 
 Create repair tickets with customer info, device model, and issue description.
 
@@ -16,7 +15,7 @@ Upload before/after repair photos.
 
 Assign technicians to jobs and track who worked on what.
 
-###📦 Inventory & Anti-Theft
+📦 Inventory & Anti-Theft
 
 Track individual parts with unique QR codes.
 
@@ -26,7 +25,7 @@ Surprise audits for anti-theft: scan shelves to reconcile inventory.
 
 Activity logs track who used what part and when.
 
-###💰 Sales & POS
+💰 Sales & POS
 
 Mobile-first quick checkout for retail and repair services.
 
@@ -36,7 +35,7 @@ Warnings for heavily discounted sales.
 
 Immutable records — no edits or deletions.
 
-###📊 Dashboard & Reporting
+📊 Dashboard & Reporting
 
 Real-time metrics: active jobs, revenue, low-stock parts, connected shops.
 
@@ -44,13 +43,13 @@ Per-shop and global reports for owners.
 
 Daily summary emails and notifications (email & Telegram).
 
-###👥 Role-Based Access
+👥 Role-Based Access
 
 Owner: full access to reports, audits, employee management.
 
 Employee: limited access — create jobs, update statuses, use inventory.
 
-###🛠️ Tech Stack
+🛠️ Tech Stack
 
 Frontend: React + TypeScript + Vite
 
@@ -62,7 +61,7 @@ Notifications: Email (Resend) & Telegram Bot API
 
 Deployment: Vercel (frontend) + Supabase (backend)
 
-##⚡ Installation
+⚡ Installation
 
 Clone the repository
 
@@ -85,7 +84,7 @@ Run the provided SQL schema to create all tables and policies.
 
 Add your SUPABASE_URL and SUPABASE_ANON_KEY in .env.
 
-##🗂️ Database Schema Highlights
+🗂️ Database Schema Highlights
 
 jobs: repair tickets
 
@@ -99,7 +98,7 @@ activity_logs: immutable log of every action
 
 job_photos: proof-of-repair photo storage
 
-##📌 Usage
+📌 Usage
 
 Owners can view dashboards, reports, and audit logs.
 
@@ -109,7 +108,7 @@ Surprise audits prevent theft and track missing parts.
 
 Sales are logged instantly, with warnings for abnormal discounts.
 
-##🌐 Deployment
+🌐 Deployment
 
 Frontend: Deploy on Vercel
 
@@ -117,7 +116,7 @@ Backend & DB: Hosted on Supabase
 
 Notifications: Email via Resend, Telegram via Bot API
 
-##📈 Roadmap / Future Features
+📈 Roadmap / Future Features
 
 Offline support (PWA) for unreliable internet connections.
 
@@ -131,4 +130,4 @@ Multi-organization SaaS support for other shops.
 
 🧾 License
 
-MIT © Jibreel Faris
+MIT © [Your Name]
