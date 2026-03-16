@@ -1,133 +1,103 @@
-ShopShield 🛡️
+# ShopShield 🛡️
 
-ShopShield is a web-based management system for multi-location mobile repair shops. It replaces paper logs, WhatsApp messages, and manual spreadsheets with a single app that tracks repairs, sales, inventory, and employee activity in real-time.
+**ShopShield** is a **web-based management system for multi-location mobile repair shops**.  
+It replaces paper logs, WhatsApp messages, and manual spreadsheets with a **single app that tracks repairs, sales, inventory, and employee activity in real-time**.  
 
-Designed for small business owners, ShopShield prevents theft, ensures accountability, and provides actionable insights across all locations.
+Designed for shop owners, ShopShield **prevents theft, ensures accountability, and provides actionable insights** across all locations.
 
-🚀 Features
-🔧 Jobs & Repair Management
+---
 
-Create repair tickets with customer info, device model, and issue description.
+## 🚀 Features
 
-Track job status: pending → in_progress → completed → collected.
+### 🔧 Jobs & Repair Management
+- Create repair tickets with customer info, device model, and issue description.
+- Track job status: `pending → in_progress → completed → collected`.
+- Upload before and after repair photos stored in Supabase Storage.
+- Assign technicians to jobs and track who worked on what.
+- Link used parts to jobs; automatically deduct from inventory.
+- View repair history per customer and device.
 
-Upload before/after repair photos.
+### 📦 Inventory & Anti-Theft
+- Track individual parts with **unique QR codes**.
+- Automatic low-stock alerts per shop.
+- Surprise audits for anti-theft:
+  - Scan shelves to reconcile inventory.
+  - Unscanned items flagged as lost.
+- Activity logs track every part movement and usage.
+- Immutable logging ensures accountability.
 
-Assign technicians to jobs and track who worked on what.
+### 💰 Sales & POS
+- Mobile-first **quick checkout** for retail and repair services.
+- Predefined repair services & retail items with auto-filled prices.
+- Record default price, final charged price, discount, and payment method.
+- Warnings for heavily discounted sales (editable but flagged).
+- Immutable records — no edits or deletions.
+- Multi-shop support — each sale linked to the correct shop.
 
-📦 Inventory & Anti-Theft
+### 📊 Dashboard & Reporting
+- Real-time metrics:
+  - Active jobs
+  - Revenue per shop / global
+  - Low-stock parts
+  - Connected shops
+- Per-shop dashboards with recent jobs and alerts.
+- Daily and weekly summary emails & Telegram notifications.
+- Future roadmap includes charts for profits and technician performance.
 
-Track individual parts with unique QR codes.
+### 👥 Role-Based Access
+- **Owner:** full access to dashboards, reports, audits, and employee management.
+- **Employee/Technician:** limited access to jobs, inventory usage, and sales recording.
+- Owners can manage employee roles and permissions.
 
-Automatic low-stock alerts.
+### 🛠️ Tech Stack
+- **Frontend:** React + TypeScript + Vite
+- **UI Library:** shadcn/ui
+- **Backend / Database / Auth:** Supabase (PostgreSQL + Auth + Storage)
+- **Notifications:** Email via Resend, Telegram Bot API
+- **Deployment:** Frontend on Vercel, backend & DB on Supabase
+- **Multi-tenant architecture:** org_id based isolation, Row Level Security (RLS)
 
-Surprise audits for anti-theft: scan shelves to reconcile inventory.
+---
 
-Activity logs track who used what part and when.
+## 🗂️ Database Schema Highlights
+- `organizations` – each repair shop group
+- `shops` – individual shops/cafés per organization
+- `profiles` – employees, technicians, owners
+- `jobs` – repair tickets
+- `parts` & `inventory_items` – parts catalog & physical inventory
+- `job_parts` – parts used per job
+- `sales` – retail and repair sales
+- `activity_logs` – immutable logs for audits
+- `job_photos` – before/after repair photos
+- `notifications` – alerts in-app, email, or Telegram
+- `alert_logs` – for auditing automated notifications
 
-💰 Sales & POS
+---
 
-Mobile-first quick checkout for retail and repair services.
+## 📌 Installation & Setup
 
-Track default price, final charged price, discounts, and payment method.
+1. **Clone the repository**
 
-Warnings for heavily discounted sales.
-
-Immutable records — no edits or deletions.
-
-📊 Dashboard & Reporting
-
-Real-time metrics: active jobs, revenue, low-stock parts, connected shops.
-
-Per-shop and global reports for owners.
-
-Daily summary emails and notifications (email & Telegram).
-
-👥 Role-Based Access
-
-Owner: full access to reports, audits, employee management.
-
-Employee: limited access — create jobs, update statuses, use inventory.
-
-🛠️ Tech Stack
-
-Frontend: React + TypeScript + Vite
-
-UI Library: shadcn/ui
-
-Backend / Database / Auth: Supabase (PostgreSQL + Auth + Storage)
-
-Notifications: Email (Resend) & Telegram Bot API
-
-Deployment: Vercel (frontend) + Supabase (backend)
-
-⚡ Installation
-
-Clone the repository
-
+```bash
 git clone https://github.com/<your-username>/ShopShield.git
 cd ShopShield
+```
+2. **Install dependencies**
 
-Install dependencies
-
+```bash
 pnpm install
+```
 
-Run the development server
+3. **Setup environment variables**
 
+```bash
+VITE_SUPABASE_URL=<your-supabase-url>
+VITE_SUPABASE_ANON_KEY=<your-supabase-anon-key>
+
+```
+
+4. **Run development server**
+
+```bash
 pnpm dev
-
-Setup Supabase:
-
-Create a Supabase project.
-
-Run the provided SQL schema to create all tables and policies.
-
-Add your SUPABASE_URL and SUPABASE_ANON_KEY in .env.
-
-🗂️ Database Schema Highlights
-
-jobs: repair tickets
-
-parts & inventory_items: parts catalog & physical inventory
-
-job_parts: links parts to jobs
-
-sales: stores retail and repair sales
-
-activity_logs: immutable log of every action
-
-job_photos: proof-of-repair photo storage
-
-📌 Usage
-
-Owners can view dashboards, reports, and audit logs.
-
-Employees can create jobs, update job statuses, and consume inventory.
-
-Surprise audits prevent theft and track missing parts.
-
-Sales are logged instantly, with warnings for abnormal discounts.
-
-🌐 Deployment
-
-Frontend: Deploy on Vercel
-
-Backend & DB: Hosted on Supabase
-
-Notifications: Email via Resend, Telegram via Bot API
-
-📈 Roadmap / Future Features
-
-Offline support (PWA) for unreliable internet connections.
-
-Automated weekly reports to Telegram.
-
-Enhanced reporting with charts (profit, technician performance).
-
-Customer database for repeat repairs & loyalty tracking.
-
-Multi-organization SaaS support for other shops.
-
-🧾 License
-
-MIT © [Your Name]
+```
