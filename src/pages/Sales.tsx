@@ -184,9 +184,9 @@ export function Sales() {
       setDefaultPrice(0);
       setFinalPrice("");
       setPaymentMethod("cash");
-    } catch (error: any) {
-      const msg = error?.message || JSON.stringify(error);
-      console.error("Error logging sale:", error);
+    } catch (err) {
+      const msg = (err as Error)?.message || JSON.stringify(err);
+      console.error("Error logging sale:", err);
       toast.error("Failed to record sale", { description: msg });
     } finally {
       setSubmitting(false);

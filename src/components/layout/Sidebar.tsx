@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, ShoppingCart, Wrench, Package, ShieldCheck, History } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useState, useEffect } from 'react';
 import { getRole } from '../../lib/auth';
@@ -7,7 +8,7 @@ import { getRole } from '../../lib/auth';
 type UserRole = 'owner' | 'employee';
 
 type NavItem = {
-  icon: any;
+  icon: LucideIcon;
   label: string;
   href: string;
   end?: boolean;
@@ -21,8 +22,8 @@ export function Sidebar() {
       try {
         const role = await getRole();
         setUserRole(role);
-      } catch (error) {
-        console.error('Error fetching user role:', error);
+      } catch (err) {
+        console.error('Error fetching user role:', err);
         setUserRole('employee'); // Default to employee on error
       }
     };

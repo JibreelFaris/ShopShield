@@ -9,12 +9,27 @@ import { toast } from "sonner"
 import { Layout } from "@/components/layout/Layout"
 import { format } from "date-fns"
 
+interface RecentJob {
+  id: string;
+  device_model: string;
+  customer_name: string;
+  status: 'pending' | 'in_progress' | 'completed' | 'collected';
+  created_at: string;
+}
+
+interface LowStockPart {
+  id: string;
+  name: string;
+  min_stock_level: number;
+  in_stock: number;
+}
+
 interface DashboardStats {
   jobs: number;
   parts: number;
   sales: number;
-  recentJobs: any[];
-  lowStockParts: any[];
+  recentJobs: RecentJob[];
+  lowStockParts: LowStockPart[];
 }
 
 export function Dashboard() {
@@ -60,7 +75,7 @@ export function Dashboard() {
         .gte('created_at', today.toISOString())
         .in('status', ['completed', 'collected'])
 
-      const jobRevenue = (jobRevenueData || []).reduce((sum: number, job: any) => sum + (job.price_charged || 0), 0)
+      const jobRevenue = (jobRevenueData || []).reduce((sum: number, job: { price_charged: number | null }) => sum + (job.price_charged || 0), 0)
 
       const { data: saleRevenueData } = await supabase
         .from('sales')
@@ -68,7 +83,7 @@ export function Dashboard() {
         .eq('org_id', orgId)
         .gte('created_at', today.toISOString())
 
-      const saleRevenue = (saleRevenueData || []).reduce((sum: number, s: any) => sum + (s.final_price || 0), 0)
+      const saleRevenue = (saleRevenueData || []).reduce((sum: number, s: { final_price: number | null }) => sum + (s.final_price || 0), 0)
 
       const todaySales = jobRevenue + saleRevenue
 
@@ -88,10 +103,10 @@ export function Dashboard() {
         .eq('org_id', orgId)
         .eq('status', 'in_stock')
 
-      const stockCounts = (itemsData || []).reduce((acc: any, item: any) => {
+      const stockCounts = (itemsData || []).reduce((acc: Record<string, number>, item: { part_id: string }) => {
          acc[item.part_id] = (acc[item.part_id] || 0) + 1;
          return acc;
-      }, {})
+      }, {} as Record<string, number>)
 
       const { data: partCatalog } = await supabase
         .from('parts')

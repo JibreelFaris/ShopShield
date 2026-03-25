@@ -20,7 +20,7 @@ export function TestButtons() {
       if (error) throw error;
       setDbStatus("✅ Connected to Supabase!");
       toast.success("Supabase connection successful");
-    } catch (error) {
+    } catch {
       setDbStatus("❌ Connection failed");
       toast.error("Supabase connection failed");
     }

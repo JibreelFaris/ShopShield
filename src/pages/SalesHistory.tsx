@@ -80,10 +80,10 @@ export function SalesHistory() {
 
       if (error) throw error;
       setSales((data as Sale[]) || []);
-    } catch (error: any) {
-      console.error("Error fetching sales:", error);
+    } catch (err) {
+      console.error("Error fetching sales:", err);
       toast.error("Failed to load sales", {
-        description: error?.message || "Unknown error",
+        description: (err as Error)?.message || "Unknown error",
       });
     } finally {
       setLoading(false);
@@ -373,6 +373,7 @@ export function SalesHistory() {
               )}
             </TableBody>
           </Table>
+          </div>
         </div>
       </Layout>
     </RoleProtectedRoute>

@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "../components/ui/button";
-import { ArrowLeft, Camera, Upload, CheckCircle2, PackagePlus, Trash2 } from "lucide-react";
+import { ArrowLeft, Camera, PackagePlus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import type { Database } from "../lib/database.types";
 import {
@@ -43,9 +43,10 @@ export function JobDetails() {
 
   useEffect(() => {
     fetchJobDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  const fetchJobDetails = async () => {
+  const fetchJobDetails = async (): Promise<void> => {
     try {
       if (!id) return;
       
@@ -60,8 +61,8 @@ export function JobDetails() {
 
       fetchLinkedParts(jobData.id);
       fetchAvailableInventory(jobData.org_id);
-    } catch (error: any) {
-      console.error('Error fetching job details:', error);
+    } catch (err) {
+      console.error('Error fetching job details:', err);
       toast.error('Failed to load job details');
     } finally {
       setLoading(false);
@@ -144,8 +145,8 @@ export function JobDetails() {
       setSelectedInventoryId("");
       toast.success("Part linked to job successfully");
       
-    } catch (error: any) {
-      console.error("Error linking part:", error);
+    } catch (err) {
+      console.error("Error linking part:", err);
       toast.error("Failed to link part");
     } finally {
       setUpdating(false);
@@ -172,8 +173,9 @@ export function JobDetails() {
       await fetchLinkedParts(job.id);
       await fetchAvailableInventory(job.org_id);
       toast.success("Part unlinked and returned to stock");
-    } catch (error) {
-       toast.error("Failed to unlink part");
+    } catch (err) {
+      console.error("Error unlinking part:", err);
+      toast.error("Failed to unlink part");
     } finally {
       setUpdating(false);
     }
@@ -203,7 +205,8 @@ export function JobDetails() {
 
       setJob({ ...job, status: newStatus });
       toast.success('Job status updated');
-    } catch (error: any) {
+    } catch (err) {
+      console.error("Error updating job status:", err);
       toast.error('Failed to update status');
     } finally {
       setUpdating(false);
@@ -251,8 +254,8 @@ export function JobDetails() {
 
       setJob({ ...job, ...updateField });
       toast.success(`${type} photo uploaded successfully`);
-    } catch (error: any) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
       toast.error(`Failed to upload ${type} photo`);
     } finally {
       setUploadingImage(null);
@@ -324,168 +327,118 @@ export function JobDetails() {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Phone</p>
-              <p className="font-medium">{job.customer_phone || "N/A"}</p>
+              <p className="font-medium">{job.customer_phone || 'N/A'}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Created On</p>
-              <p className="font-medium">{format(new Date(job.created_at), 'PPP')}</p>
+              <p className="text-sm text-muted-foreground">Device Model</p>
+              <p className="font-medium">{job.device_model}</p>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Issue Description</p>
+              <p className="font-medium">{job.issue}</p>
             </div>
           </div>
 
           <div className="p-6 bg-card border rounded-lg shadow-sm space-y-4">
-            <h2 className="text-lg font-semibold border-b pb-2">Repair Ticket</h2>
-            <div className="flex justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Device</p>
-                <p className="font-medium">{job.device_model}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-sm text-muted-foreground">Total Charge</p>
-                <p className="font-medium text-lg text-green-600 dark:text-green-500">AED {job.price_charged}</p>
-              </div>
+            <h2 className="text-lg font-semibold border-b pb-2">Job Summary</h2>
+            <div>
+              <p className="text-sm text-muted-foreground">Status</p>
+              <p className="font-medium capitalize">{job.status.replace('_', ' ')}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Issue Description</p>
-              <p className="mt-1 whitespace-pre-wrap">{job.issue}</p>
+              <p className="text-sm text-muted-foreground">Created</p>
+              <p className="font-medium">{format(new Date(job.created_at), 'PPP p')}</p>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Total Price</p>
+              <p className="font-medium text-lg text-green-600">AED {(job.price_charged || 0).toFixed(2)}</p>
             </div>
           </div>
         </div>
 
-        <div className="p-6 bg-card border rounded-lg shadow-sm space-y-6">
-          <div className="flex items-center justify-between border-b pb-2">
-            <h2 className="text-lg font-semibold">Parts Used</h2>
-          </div>
-          
-          <div className="space-y-4">
-             {linkedParts.length > 0 ? (
-               <div className="divide-y border rounded-md">
-                 {linkedParts.map(link => (
-                   <div key={link.id} className="p-3 flex items-center justify-between bg-muted/30">
-                     <div>
-                       <p className="font-medium">{link.inventory_items?.parts?.name}</p>
-                       <p className="text-xs text-muted-foreground font-mono">QR: {link.inventory_items?.qr_code || link.inventory_item_id.split('-')[0]}</p>
-                     </div>
-                     <div className="flex items-center gap-4">
-                       <span className="font-medium text-green-600 dark:text-green-500">AED {link.inventory_items?.parts?.selling_price}</span>
-                       <Button 
-                         variant="ghost" 
-                         size="icon" 
-                         className="h-8 w-8 text-destructive"
-                         onClick={() => handleUnlinkPart(link.id, link.inventory_item_id, link.inventory_items?.parts?.selling_price || 0)}
-                         disabled={updating}
-                       >
-                         <Trash2 className="h-4 w-4" />
-                       </Button>
-                     </div>
-                   </div>
-                 ))}
-               </div>
-             ) : (
-               <p className="text-sm text-muted-foreground italic">No parts have been assigned to this job yet.</p>
-             )}
-
-             <div className="pt-4 flex items-center gap-3">
-               <Select 
-                 value={selectedInventoryId} 
-                 onValueChange={setSelectedInventoryId}
-                 disabled={updating || availableParts.length === 0}
-               >
-                 <SelectTrigger className="flex-1">
-                   <SelectValue placeholder={availableParts.length > 0 ? "Select a part from inventory to assign..." : "No items available in stock"} />
-                 </SelectTrigger>
-                 <SelectContent>
-                   {availableParts.map(item => (
-                     <SelectItem key={item.id} value={item.id}>
-                       {item.parts?.name} <span className="text-muted-foreground text-xs ml-2 font-mono">({item.qr_code || item.id.split('-')[0]})</span> - AED {item.parts?.selling_price}
-                     </SelectItem>
-                   ))}
-                 </SelectContent>
-               </Select>
-               <Button onClick={handleLinkPart} disabled={!selectedInventoryId || updating}>
-                 <PackagePlus className="h-4 w-4 mr-2" /> Add Part
-               </Button>
-             </div>
-          </div>
-        </div>
-
-        <div className="p-6 bg-card border rounded-lg shadow-sm space-y-6">
-          <h2 className="text-lg font-semibold border-b pb-2">Proof of Repair (Photos)</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            
-            {/* Before Photo */}
-            <div className="space-y-4">
-              <h3 className="font-medium flex items-center justify-between">
-                Before Repair
-                {job.before_photo_url && <CheckCircle2 className="h-4 w-4 text-green-500" />}
-              </h3>
-              {job.before_photo_url ? (
-                 <div className="aspect-video relative rounded-md overflow-hidden border bg-muted">
-                   <img src={job.before_photo_url} alt="Before repair" className="object-cover w-full h-full" />
-                 </div>
-              ) : (
-                <div className="aspect-video rounded-md border-2 border-dashed flex flex-col items-center justify-center text-muted-foreground bg-muted/50">
-                  <Camera className="h-8 w-8 mb-2 opacity-50" />
-                  <p className="text-sm">No photo uploaded</p>
-                </div>
-              )}
-              
-              <div>
-                <Button 
-                  variant="outline" 
-                  className="w-full relative overflow-hidden" 
-                  disabled={uploadingImage === 'before'}
-                >
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                    onChange={(e) => handleImageUpload(e, 'before')}
-                    disabled={uploadingImage === 'before'}
-                  />
-                  {uploadingImage === 'before' ? "Uploading..." : <><Upload className="mr-2 h-4 w-4" /> {job.before_photo_url ? "Replace Photo" : "Upload Photo"}</>}
-                </Button>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="p-6 bg-card border rounded-lg shadow-sm space-y-4">
+            <h2 className="text-lg font-semibold border-b pb-2">Before Photo</h2>
+            {job.before_photo_url ? (
+              <img src={job.before_photo_url} alt="Before" className="w-full h-64 object-cover rounded" />
+            ) : (
+              <div className="w-full h-64 bg-muted flex items-center justify-center rounded">
+                <p className="text-muted-foreground">No photo uploaded</p>
               </div>
-            </div>
+            )}
+            <label className="flex items-center justify-center gap-2 cursor-pointer bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary/90">
+              <Camera className="h-4 w-4" />
+              Upload Before Photo
+              <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'before')} className="hidden" disabled={uploadingImage === 'before'} />
+            </label>
+          </div>
 
-            {/* After Photo */}
-            <div className="space-y-4">
-              <h3 className="font-medium flex items-center justify-between">
-                After Repair
-                 {job.after_photo_url && <CheckCircle2 className="h-4 w-4 text-green-500" />}
-              </h3>
-              {job.after_photo_url ? (
-                 <div className="aspect-video relative rounded-md overflow-hidden border bg-muted">
-                   <img src={job.after_photo_url} alt="After repair" className="object-cover w-full h-full" />
-                 </div>
-              ) : (
-                <div className="aspect-video rounded-md border-2 border-dashed flex flex-col items-center justify-center text-muted-foreground bg-muted/50">
-                  <Camera className="h-8 w-8 mb-2 opacity-50" />
-                  <p className="text-sm">No photo uploaded</p>
-                </div>
-              )}
-              
-              <div>
-                <Button 
-                  variant="outline" 
-                  className="w-full relative overflow-hidden"
-                  disabled={uploadingImage === 'after'}
-                >
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                    onChange={(e) => handleImageUpload(e, 'after')}
-                    disabled={uploadingImage === 'after'}
-                  />
-                  {uploadingImage === 'after' ? "Uploading..." : <><Upload className="mr-2 h-4 w-4" /> {job.after_photo_url ? "Replace Photo" : "Upload Photo"}</>}
-                </Button>
+          <div className="p-6 bg-card border rounded-lg shadow-sm space-y-4">
+            <h2 className="text-lg font-semibold border-b pb-2">After Photo</h2>
+            {job.after_photo_url ? (
+              <img src={job.after_photo_url} alt="After" className="w-full h-64 object-cover rounded" />
+            ) : (
+              <div className="w-full h-64 bg-muted flex items-center justify-center rounded">
+                <p className="text-muted-foreground">No photo uploaded</p>
               </div>
-            </div>
-
+            )}
+            <label className="flex items-center justify-center gap-2 cursor-pointer bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary/90">
+              <Camera className="h-4 w-4" />
+              Upload After Photo
+              <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'after')} className="hidden" disabled={uploadingImage === 'after'} />
+            </label>
           </div>
         </div>
 
+        <div className="p-6 bg-card border rounded-lg shadow-sm space-y-4">
+          <h2 className="text-lg font-semibold border-b pb-2">Parts Used</h2>
+          
+          {linkedParts.length > 0 && (
+            <div className="space-y-2">
+              {linkedParts.map((part) => (
+                <div key={part.id} className="flex items-center justify-between p-3 bg-muted rounded">
+                  <div>
+                    <p className="font-medium">{part.inventory_items?.parts?.name}</p>
+                    <p className="text-sm text-muted-foreground">QR: {part.inventory_items?.qr_code}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium">AED {(part.inventory_items?.parts?.selling_price || 0).toFixed(2)}</p>
+                    <Button 
+                      size="sm" 
+                      variant="destructive"
+                      onClick={() => handleUnlinkPart(part.id, part.inventory_item_id, part.inventory_items?.parts?.selling_price || 0)}
+                      disabled={updating}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="flex gap-2">
+            <select 
+              value={selectedInventoryId}
+              onChange={(e) => setSelectedInventoryId(e.target.value)}
+              className="flex-1 px-3 py-2 border rounded bg-background"
+            >
+              <option value="">Select a part to add...</option>
+              {availableParts.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.parts?.name} (QR: {item.qr_code})
+                </option>
+              ))}
+            </select>
+            <Button 
+              onClick={handleLinkPart}
+              disabled={!selectedInventoryId || updating}
+            >
+              <PackagePlus className="h-4 w-4 mr-2" />
+              Add Part
+            </Button>
+          </div>
+        </div>
       </div>
     </Layout>
   );

@@ -71,9 +71,9 @@ export function NewPart() {
 
       toast.success(`Successfully added ${quantity} units!`);
       navigate('/inventory');
-    } catch (error: any) {
-      console.error("Error creating parts:", error);
-      toast.error(error.message || "Failed to add inventory");
+    } catch (err) {
+      console.error("Error creating parts:", err);
+      toast.error((err as Error).message || "Failed to add inventory");
     } finally {
       setLoading(false);
     }

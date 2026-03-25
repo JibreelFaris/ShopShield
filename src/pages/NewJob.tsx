@@ -54,9 +54,9 @@ export function NewJob() {
 
       toast.success("Job created successfully!");
       navigate(`/jobs/${data.id}`);
-    } catch (error: any) {
-      console.error("Error creating job:", error);
-      toast.error(error.message || "Failed to create job");
+    } catch (err) {
+      console.error("Error creating job:", err);
+      toast.error((err as Error).message || "Failed to create job");
     } finally {
       setLoading(false);
     }
